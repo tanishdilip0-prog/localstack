@@ -1,6 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from pydantic import BaseModel, EmailStr
 from auth import hash_password, verify_password, create_token
 import psycopg
@@ -15,7 +14,12 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:4173",
+        "http://127.0.0.1:4173",
+        "http://172.28.82.219:5173",
+        "http://172.28.82.219:4173",
     ],
+    allow_origin_regex=r"^https?://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -389,6 +393,23 @@ def setup_database():
             price INTEGER NOT NULL,
             customer_name VARCHAR(255) DEFAULT 'Guest',
             status VARCHAR(50) DEFAULT 'reserved',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
+
+    # -----------------------------------------------------
+    # Users
+    # -----------------------------------------------------
+
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            role VARCHAR(50) NOT NULL DEFAULT 'customer',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """
@@ -1394,3 +1415,8 @@ def update_reservation_status(
     finally:
 
         conn.close()
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

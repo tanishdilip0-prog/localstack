@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 
 
 
-const API = "http://127.0.0.1:8000";
+const API =
+  typeof window !== "undefined" && window.location.hostname
+    ? `http://${window.location.hostname}:8000`
+    : "http://172.28.82.219:8000";
 
 
 
@@ -465,6 +468,9 @@ function App() {
       localStorage.setItem("localstock_user", JSON.stringify(data.user));
       setToken(data.token);
       setUser(data.user);
+      if (data.user?.role === "shopkeeper") {
+        setMode("shopkeeper");
+      }
       setShowAuth(false);
       setMessage(`Welcome back, ${data.user.name}.`);
       return true;
@@ -2691,6 +2697,12 @@ function App() {
             <button type="button" onClick={() => setShowAuth(false)} className="text-slate-500 hover:text-white text-xl">✕</button>
           </div>
 
+          {message && (
+            <div className="p-3 mb-4 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-cyan-300">
+              {message}
+            </div>
+          )}
+
           <form onSubmit={submit} className="space-y-4">
             {authMode === "register" && (
               <div>
@@ -3245,6 +3257,8 @@ function App() {
 
 
       <ProductModal />
+
+      <AuthModal />
 
 
 
