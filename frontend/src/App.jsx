@@ -9,10 +9,25 @@ import Toast from "./components/Toast";
 import LocationModal from "./components/LocationModal";
 import { Store, Heart, ShieldCheck } from "lucide-react";
 
-const API =
-  typeof window !== "undefined" && window.location.hostname
-    ? `http://${window.location.hostname}:8000`
-    : "http://172.28.82.219:8000";
+const getApiUrl = () => {
+  if (typeof window === "undefined") return "http://127.0.0.1:8000";
+  const host = window.location.hostname;
+  if (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host.startsWith("172.") ||
+    host.startsWith("192.") ||
+    host.startsWith("10.")
+  ) {
+    return `http://${host}:8000`;
+  }
+  const custom = localStorage.getItem("localstock_api_url");
+  if (custom) return custom;
+  return "http://localhost:8000";
+};
+
+const API = getApiUrl();
+const isGitHubPages = typeof window !== "undefined" && window.location.hostname.includes("github.io");
 
 function App() {
   const [mode, setMode] = useState("customer"); // "customer" | "shopkeeper"
@@ -46,9 +61,9 @@ function App() {
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return {
-      latitude: 12.9716,
-      longitude: 77.5946,
-      name: "Bengaluru Central",
+      latitude: 13.0827,
+      longitude: 80.2707,
+      name: "Chennai Central / Mount Road",
       enabled: true,
     };
   });
@@ -98,12 +113,12 @@ function App() {
         setLocation({ latitude: data.latitude, longitude: data.longitude, enabled: true });
         setMessage("Location set via network: " + (data.city || "your area") + ". Distances are approximate.");
       } else {
-        setLocation({ latitude: 12.9716, longitude: 77.5946, enabled: true });
-        setMessage("Using default location (Bengaluru). Distances are approximate.");
+        setLocation({ latitude: 13.0827, longitude: 80.2707, name: "Chennai Central / Mount Road", enabled: true });
+        setMessage("Using default location (Chennai Central).");
       }
     } catch (e) {
-      setLocation({ latitude: 12.9716, longitude: 77.5946, enabled: true });
-      setMessage("Using demo location. You can still search and see results.");
+      setLocation({ latitude: 13.0827, longitude: 80.2707, name: "Chennai Central / Mount Road", enabled: true });
+      setMessage("Using default location (Chennai Central).");
     } finally {
       setLocationLoading(false);
     }
@@ -224,9 +239,15 @@ function App() {
       }
     } catch (error) {
       console.error(error);
-      setMessage(
-        "Unable to connect to LocalStock backend. Please verify FastAPI is running."
-      );
+      if (isGitHubPages) {
+        setMessage(
+          "⚠️ GitHub Pages cannot access your local Python server. Switch to your local tab: http://localhost:4173/localstack/ to access your live database with 4,300+ items!"
+        );
+      } else {
+        setMessage(
+          "Unable to connect to LocalStock backend. Please verify FastAPI is running on port 8000."
+        );
+      }
     } finally {
       setLoading(false);
     }

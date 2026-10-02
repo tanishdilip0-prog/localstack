@@ -70,7 +70,7 @@ export default function Navbar({
               </span>
               <MapPin className="w-3.5 h-3.5 text-emerald-700" />
               <span className="truncate max-w-[160px] font-bold">
-                {location?.name || "Bengaluru Central"}
+                {location?.name || "Chennai Central"}
               </span>
               <ChevronDown className="w-3 h-3 text-emerald-600 opacity-60 group-hover:opacity-100 group-hover:translate-y-0.5 transition" />
             </button>

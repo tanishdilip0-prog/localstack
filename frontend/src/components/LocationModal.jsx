@@ -12,146 +12,174 @@ import {
   ChevronRight
 } from "lucide-react";
 
-export const BENGALURU_PRESETS = [
+export const CHENNAI_PRESETS = [
   {
-    name: "Koramangala",
-    landmark: "Forum Mall & Sony World",
-    latitude: 12.9352,
-    longitude: 77.6245,
-    tag: "South Tech Hub",
+    name: "Ritchie Street",
+    landmark: "Meeran Sahib St, Mount Road",
+    latitude: 13.0694,
+    longitude: 80.2704,
+    tag: "Asia's 2nd Largest Electronics Market",
   },
   {
-    name: "Indiranagar",
-    landmark: "100 Ft Rd & CMH Road",
-    latitude: 12.9719,
-    longitude: 77.6412,
-    tag: "Central East",
+    name: "T. Nagar",
+    landmark: "Pondy Bazaar & Usman Road",
+    latitude: 13.0418,
+    longitude: 80.2341,
+    tag: "Prime Retail Hub",
   },
   {
-    name: "Whitefield",
-    landmark: "ITPL & Phoenix Marketcity",
-    latitude: 12.9698,
-    longitude: 77.7499,
-    tag: "East Tech Hub",
+    name: "Anna Nagar",
+    landmark: "2nd Avenue & Roundtana",
+    latitude: 13.0850,
+    longitude: 80.2101,
+    tag: "North West Hub",
   },
   {
-    name: "HSR Layout",
-    landmark: "27th Main & Sectors 1-7",
-    latitude: 12.9116,
-    longitude: 77.6389,
-    tag: "Startup Hub",
+    name: "Velachery",
+    landmark: "Phoenix Marketcity & Bypass Rd",
+    latitude: 12.9815,
+    longitude: 80.2180,
+    tag: "South Mall Hub",
   },
   {
-    name: "Jayanagar",
-    landmark: "4th Block Shopping Complex",
-    latitude: 12.9256,
-    longitude: 77.5934,
-    tag: "South Bangalore",
+    name: "Adyar",
+    landmark: "LB Road & Gandhi Nagar",
+    latitude: 13.0012,
+    longitude: 80.2565,
+    tag: "South Chennai",
   },
   {
-    name: "SP Road / Chickpet",
-    landmark: "Electronics & PC Parts Market",
-    latitude: 12.9726,
-    longitude: 77.5750,
-    tag: "Electronics Bazaar",
+    name: "OMR Thoraipakkam",
+    landmark: "Rajiv Gandhi Salai IT Corridor",
+    latitude: 12.9348,
+    longitude: 80.2312,
+    tag: "IT Express Highway",
   },
   {
-    name: "MG Road / Brigade Rd",
-    landmark: "Trinity Circle & Metro",
-    latitude: 12.9752,
-    longitude: 77.6077,
-    tag: "Central CBD",
+    name: "OMR Sholinganallur",
+    landmark: "ELCOT SEZ & Toll Junction",
+    latitude: 12.9010,
+    longitude: 80.2279,
+    tag: "South IT SEZ",
   },
   {
-    name: "Electronic City",
-    landmark: "Infosys Gate & Phase 1/2",
-    latitude: 12.8458,
-    longitude: 77.6681,
-    tag: "South Tech Corridor",
+    name: "Vadapalani",
+    landmark: "Forum Vijaya Mall & Arcot Rd",
+    latitude: 13.0500,
+    longitude: 80.2121,
+    tag: "Central Cinema & Retail",
   },
   {
-    name: "Malleshwaram",
-    landmark: "Sampige Rd & 8th Cross",
-    latitude: 13.0035,
-    longitude: 77.5674,
-    tag: "North West",
+    name: "Mylapore",
+    landmark: "Luz Corner & Kutchery Road",
+    latitude: 13.0368,
+    longitude: 80.2676,
+    tag: "Cultural & Retail District",
   },
   {
-    name: "BTM Layout",
-    landmark: "Outer Ring Rd & Udupi Garden",
-    latitude: 12.9166,
-    longitude: 77.6101,
-    tag: "South Bangalore",
+    name: "Tambaram",
+    landmark: "GST Road & West Market",
+    latitude: 12.9249,
+    longitude: 80.1000,
+    tag: "South Gateway",
   },
   {
-    name: "Marathahalli",
-    landmark: "Bridge & Outer Ring Rd",
-    latitude: 12.9560,
-    longitude: 77.7011,
-    tag: "East Corridor",
+    name: "Nungambakkam",
+    landmark: "Khader Nawaz Khan & Sterling Rd",
+    latitude: 13.0569,
+    longitude: 80.2425,
+    tag: "Central Commercial",
   },
   {
-    name: "Hebbal",
-    landmark: "Flyover & Elements Mall",
-    latitude: 13.0358,
-    longitude: 77.5970,
-    tag: "North Bangalore",
+    name: "Porur",
+    landmark: "Mount Poonamallee Road",
+    latitude: 13.0382,
+    longitude: 80.1565,
+    tag: "West Tech Hub",
   },
   {
-    name: "Rajajinagar",
-    landmark: "Orion Mall & Dr Rajkumar Rd",
-    latitude: 12.9922,
-    longitude: 77.5488,
-    tag: "West Bangalore",
+    name: "Royapettah / EA",
+    landmark: "Express Avenue Mall",
+    latitude: 13.0588,
+    longitude: 80.2642,
+    tag: "Mall & Retail Hub",
   },
   {
-    name: "Commercial Street",
-    landmark: "Shivajinagar & Tasker Town",
-    latitude: 12.9819,
-    longitude: 77.6082,
-    tag: "Retail District",
+    name: "Guindy",
+    landmark: "Kathipara & Race Course Rd",
+    latitude: 13.0067,
+    longitude: 80.2025,
+    tag: "Industrial & Metro Hub",
   },
   {
-    name: "Frazer Town",
-    landmark: "Mosque Road & Coles Park",
-    latitude: 12.9885,
-    longitude: 77.6169,
-    tag: "Central East",
+    name: "Chromepet",
+    landmark: "GST Road & Radha Nagar",
+    latitude: 12.9516,
+    longitude: 80.1462,
+    tag: "South Suburb Hub",
   },
   {
-    name: "JP Nagar",
-    landmark: "Central Mall & Phase 1-7",
-    latitude: 12.9081,
-    longitude: 77.5858,
-    tag: "South Bangalore",
+    name: "Purasawalkam",
+    landmark: "High Road & Doveton",
+    latitude: 13.0900,
+    longitude: 80.2580,
+    tag: "North Central Retail",
   },
   {
-    name: "Banashankari",
-    landmark: "BDA Complex & Temple Rd",
-    latitude: 12.9330,
-    longitude: 77.5536,
-    tag: "South West",
+    name: "Ambattur",
+    landmark: "OT & Industrial Estate",
+    latitude: 13.1143,
+    longitude: 80.1548,
+    tag: "North West Industrial",
   },
   {
-    name: "Vijayanagar",
-    landmark: "Pipeline Rd & RPC Layout",
-    latitude: 12.9726,
-    longitude: 77.5202,
-    tag: "West Bangalore",
+    name: "Thiruvanmiyur / ECR",
+    landmark: "Tidel Park & East Coast Road",
+    latitude: 12.9830,
+    longitude: 80.2594,
+    tag: "Coastal Tech Hub",
   },
   {
-    name: "Yelahanka",
-    landmark: "New Town & Airport Road",
-    latitude: 13.1005,
-    longitude: 77.5963,
-    tag: "North Airport Zone",
+    name: "Kilpauk",
+    landmark: "EVR Periyar Salai & Taylors Rd",
+    latitude: 13.0784,
+    longitude: 80.2412,
+    tag: "Central West",
   },
   {
-    name: "Bellandur / Sarjapur",
-    landmark: "EcoSpace & Central Jail Rd",
-    latitude: 12.9265,
-    longitude: 77.6718,
-    tag: "ORR Tech Parks",
+    name: "Besant Nagar",
+    landmark: "Elliot's Beach Road",
+    latitude: 13.0003,
+    longitude: 80.2707,
+    tag: "Beachside District",
+  },
+  {
+    name: "Alwarpet",
+    landmark: "TTK Road & Eldams Rd",
+    latitude: 13.0334,
+    longitude: 80.2505,
+    tag: "Central South",
+  },
+  {
+    name: "Perambur",
+    landmark: "Madhavaram High Road & ICF",
+    latitude: 13.1075,
+    longitude: 80.2334,
+    tag: "North Chennai",
+  },
+  {
+    name: "Egmore",
+    landmark: "Railway Station & Pantheon Rd",
+    latitude: 13.0732,
+    longitude: 80.2609,
+    tag: "Transit & Commercial",
+  },
+  {
+    name: "Triplicane",
+    landmark: "Bharathi Salai & Pycrofts Rd",
+    latitude: 13.0587,
+    longitude: 80.2757,
+    tag: "Heritage Retail",
   },
 ];
 
@@ -170,9 +198,9 @@ export default function LocationModal({
   const [customName, setCustomName] = useState("");
 
   const filteredPresets = useMemo(() => {
-    if (!searchFilter.trim()) return BENGALURU_PRESETS;
+    if (!searchFilter.trim()) return CHENNAI_PRESETS;
     const q = searchFilter.toLowerCase();
-    return BENGALURU_PRESETS.filter(
+    return CHENNAI_PRESETS.filter(
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.landmark.toLowerCase().includes(q) ||
@@ -211,17 +239,17 @@ export default function LocationModal({
             </div>
             <div>
               <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">
-                Choose Your Location
+                Choose Chennai Location
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-0.5">
-                Select your area to discover nearby store stock & accurate distances
+                Explore local stock across Ritchie St, T.Nagar, Anna Nagar, OMR & all of Chennai
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -233,7 +261,7 @@ export default function LocationModal({
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Active:</span>
             <span className="font-bold underline truncate">
-              {currentLocation?.name || "Bengaluru Central"}
+              {currentLocation?.name || "Chennai Central"}
             </span>
             {currentLocation?.latitude && (
               <span className="text-emerald-700 font-normal hidden sm:inline text-[11px]">
@@ -242,7 +270,7 @@ export default function LocationModal({
             )}
           </div>
           <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
-            200+ Stores Live
+            210+ Chennai Stores
           </span>
         </div>
 
@@ -282,7 +310,7 @@ export default function LocationModal({
                   Enter Exact Coordinates
                 </span>
                 <span className="text-[10px] text-slate-500">
-                  Test any location in Karnataka
+                  Test any location in Chennai / Tamil Nadu
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -295,7 +323,7 @@ export default function LocationModal({
                     step="any"
                     value={customLat}
                     onChange={(e) => setCustomLat(e.target.value)}
-                    placeholder="E.g. 12.9716"
+                    placeholder="E.g. 13.0694"
                     required
                     className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
@@ -309,7 +337,7 @@ export default function LocationModal({
                     step="any"
                     value={customLng}
                     onChange={(e) => setCustomLng(e.target.value)}
-                    placeholder="E.g. 77.5946"
+                    placeholder="E.g. 80.2704"
                     required
                     className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
@@ -323,7 +351,7 @@ export default function LocationModal({
                   type="text"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="E.g. My Office, MG Road Hub"
+                  placeholder="E.g. My Home, DLF Porur, Tidel Park"
                   className="w-full px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
@@ -343,7 +371,7 @@ export default function LocationModal({
               type="text"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              placeholder="Search Bangalore locality (e.g. Koramangala, Whitefield, HSR)..."
+              placeholder="Search Chennai locality (e.g. Ritchie St, T.Nagar, Velachery, OMR)..."
               className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200/90 text-xs text-slate-800 placeholder:text-slate-400 bg-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
             />
           </div>
@@ -352,10 +380,10 @@ export default function LocationModal({
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Popular Bangalore Areas ({filteredPresets.length})
+                Chennai Localities ({filteredPresets.length})
               </span>
               <span className="text-[11px] text-slate-400 font-medium">
-                Click any to set as active location
+                Click any to set active location
               </span>
             </div>
 
@@ -416,7 +444,7 @@ export default function LocationModal({
 
         {/* Footer */}
         <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
-          <span>Stores and stock update instantly for your chosen location.</span>
+          <span>Stores and stock update instantly for your chosen Chennai location.</span>
           <button
             type="button"
             onClick={onClose}
