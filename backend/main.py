@@ -1,10 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from auth import hash_password, verify_password, create_token
 import psycopg
 import re
 import math
+import csv
+import io
+import json
 
 app = FastAPI(title="LocalStock API")
 
@@ -1042,6 +1045,161 @@ def delete_product(product_id: int):
             "product": row[2],
         },
     }
+
+
+# =========================================================
+# BULK INVENTORY UPLOAD (CSV / JSON)
+# =========================================================
+
+@app.post("/inventory/upload")
+async def upload_inventory_file(file: UploadFile = File(...)):
+    filename = (file.filename or "").lower()
+    if not (filename.endswith(".csv") or filename.endswith(".json")):
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported file format. Please upload a .csv or .json file."
+        )
+
+    content = await file.read()
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError:
+        try:
+            text = content.decode("latin-1")
+        except Exception:
+            raise HTTPException(status_code=400, detail="Unable to decode file content.")
+
+    products_to_insert = []
+    errors = []
+
+    if filename.endswith(".json"):
+        try:
+            data = json.loads(text)
+            if isinstance(data, dict) and "products" in data:
+                items = data["products"]
+            elif isinstance(data, list):
+                items = data
+            else:
+                items = [data]
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Invalid JSON format: {str(e)}")
+
+        for idx, item in enumerate(items, start=1):
+            if not isinstance(item, dict):
+                errors.append(f"Row {idx}: Item is not a valid JSON object.")
+                continue
+            shop = str(item.get("shop", "")).strip()
+            product = str(item.get("product", "")).strip()
+            category = str(item.get("category", "general")).strip().lower()
+            try:
+                price = int(float(item.get("price", 0)))
+                online_price = int(float(item.get("online_price", price) or price))
+                stock = int(float(item.get("stock", 1) or 1))
+            except (ValueError, TypeError):
+                errors.append(f"Row {idx}: Invalid price, online_price or stock numbers.")
+                continue
+
+            if not shop or not product or price <= 0:
+                errors.append(f"Row {idx}: Missing required fields (shop, product, price > 0).")
+                continue
+
+            distance = float(item.get("distance", 0) or 0)
+            rating = float(item.get("rating", 0) or 0)
+            address = item.get("address")
+            lat = float(item["latitude"]) if item.get("latitude") is not None else None
+            lng = float(item["longitude"]) if item.get("longitude") is not None else None
+
+            products_to_insert.append((
+                shop, product, category, price, online_price, stock,
+                distance, rating, address, lat, lng
+            ))
+
+    elif filename.endswith(".csv"):
+        try:
+            reader = csv.DictReader(io.StringIO(text))
+            if not reader.fieldnames:
+                raise HTTPException(status_code=400, detail="CSV file has no headers.")
+
+            for idx, row in enumerate(reader, start=2):
+                if not row or not any(row.values()):
+                    continue
+                norm_row = {k.strip().lower().replace(" ", "_"): (v.strip() if v else "") for k, v in row.items() if k}
+                shop = norm_row.get("shop") or norm_row.get("shop_name") or norm_row.get("store") or ""
+                product = norm_row.get("product") or norm_row.get("product_name") or norm_row.get("item") or ""
+                category = (norm_row.get("category") or "general").lower()
+
+                if not shop or not product:
+                    errors.append(f"Line {idx}: Missing shop or product name.")
+                    continue
+
+                try:
+                    price = int(float(norm_row.get("price", 0) or 0))
+                    online_price = int(float(norm_row.get("online_price", price) or price))
+                    stock = int(float(norm_row.get("stock", 1) or 1))
+                except ValueError:
+                    errors.append(f"Line {idx}: Invalid numeric value for price, online_price, or stock.")
+                    continue
+
+                if price <= 0:
+                    errors.append(f"Line {idx}: Price must be greater than 0.")
+                    continue
+
+                distance = float(norm_row.get("distance", 0) or 0) if norm_row.get("distance") else 0.0
+                rating = float(norm_row.get("rating", 0) or 0) if norm_row.get("rating") else 0.0
+                address = norm_row.get("address") or None
+                lat = float(norm_row["latitude"]) if norm_row.get("latitude") else None
+                lng = float(norm_row["longitude"]) if norm_row.get("longitude") else None
+
+                products_to_insert.append((
+                    shop, product, category, price, online_price, stock,
+                    distance, rating, address, lat, lng
+                ))
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to parse CSV file: {str(e)}")
+
+    if not products_to_insert:
+        return {
+            "success": False,
+            "message": "No valid product records found matching required pattern.",
+            "inserted_count": 0,
+            "errors": errors[:25]
+        }
+
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.executemany(
+            """
+            INSERT INTO inventory
+            (
+                shop,
+                product,
+                category,
+                price,
+                online_price,
+                stock,
+                distance,
+                rating,
+                address,
+                latitude,
+                longitude
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            products_to_insert
+        )
+        conn.commit()
+        return {
+            "success": True,
+            "message": f"Successfully imported {len(products_to_insert)} products.",
+            "inserted_count": len(products_to_insert),
+            "errors": errors[:25],
+            "total_rows_processed": len(products_to_insert) + len(errors)
+        }
+    finally:
+        conn.close()
 
 
 # =========================================================
