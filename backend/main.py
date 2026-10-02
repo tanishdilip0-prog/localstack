@@ -141,123 +141,106 @@ def calculate_distance(
 # AI / NLP
 # =========================================================
 
-def extract_budget(text: str):
+# =========================================================
+# AI / NLP & LOCATION DETECTION
+# =========================================================
 
+BENGALURU_AREAS = {
+    "koramangala": {"name": "Koramangala", "lat": 12.9352, "lng": 77.6245},
+    "indiranagar": {"name": "Indiranagar", "lat": 12.9719, "lng": 77.6412},
+    "whitefield": {"name": "Whitefield", "lat": 12.9698, "lng": 77.7499},
+    "jayanagar": {"name": "Jayanagar", "lat": 12.9256, "lng": 77.5934},
+    "hsr layout": {"name": "HSR Layout", "lat": 12.9116, "lng": 77.6389},
+    "hsr": {"name": "HSR Layout", "lat": 12.9116, "lng": 77.6389},
+    "btm layout": {"name": "BTM Layout", "lat": 12.9166, "lng": 77.6101},
+    "btm": {"name": "BTM Layout", "lat": 12.9166, "lng": 77.6101},
+    "malleswaram": {"name": "Malleshwaram", "lat": 13.0035, "lng": 77.5674},
+    "malleshwaram": {"name": "Malleshwaram", "lat": 13.0035, "lng": 77.5674},
+    "mg road": {"name": "MG Road", "lat": 12.9752, "lng": 77.6077},
+    "brigade road": {"name": "Brigade Road", "lat": 12.9752, "lng": 77.6077},
+    "electronic city": {"name": "Electronic City", "lat": 12.8458, "lng": 77.6681},
+    "marathahalli": {"name": "Marathahalli", "lat": 12.9560, "lng": 77.7011},
+    "hebbal": {"name": "Hebbal", "lat": 13.0358, "lng": 77.5970},
+    "chickpet": {"name": "Chickpet / SP Road", "lat": 12.9726, "lng": 77.5750},
+    "sp road": {"name": "SP Road", "lat": 12.9726, "lng": 77.5750},
+    "rajajinagar": {"name": "Rajajinagar", "lat": 12.9922, "lng": 77.5488},
+    "jp nagar": {"name": "JP Nagar", "lat": 12.9081, "lng": 77.5858},
+    "yelahanka": {"name": "Yelahanka", "lat": 13.1005, "lng": 77.5963},
+    "shivajinagar": {"name": "Shivajinagar", "lat": 12.9819, "lng": 77.6082},
+    "frazer town": {"name": "Frazer Town", "lat": 12.9885, "lng": 77.6169},
+    "banashankari": {"name": "Banashankari", "lat": 12.9330, "lng": 77.5536},
+    "vijayanagar": {"name": "Vijayanagar", "lat": 12.9726, "lng": 77.5202},
+    "commercial street": {"name": "Commercial Street", "lat": 12.9819, "lng": 77.6082},
+    "bellandur": {"name": "Bellandur", "lat": 12.9265, "lng": 77.6718},
+    "sarjapur": {"name": "Sarjapur Road", "lat": 12.9071, "lng": 77.6474},
+    "kengeri": {"name": "Kengeri", "lat": 12.9074, "lng": 77.4848},
+    "yeshwanthpur": {"name": "Yeshwanthpur", "lat": 13.0221, "lng": 77.5416},
+    "domlur": {"name": "Domlur", "lat": 12.9638, "lng": 77.6387},
+    "peenya": {"name": "Peenya", "lat": 13.0324, "lng": 77.5101},
+}
+
+def detect_location_in_query(text: str):
+    text_lower = text.lower()
+    for key, loc in BENGALURU_AREAS.items():
+        if re.search(r"\b" + re.escape(key) + r"\b", text_lower):
+            return loc
+    return None
+
+def extract_budget(text: str):
     patterns = [
         r"(?:under|below|less than|within|max(?:imum)|budget(?: of)?)[^\d₹]*₹?\s*(\d+)",
         r"₹\s*(\d+)",
+        r"(\d+)\s*(?:rs|rupees|inr)",
     ]
-
     for pattern in patterns:
-
-        match = re.search(
-            pattern,
-            text.lower(),
-        )
-
+        match = re.search(pattern, text.lower())
         if match:
-            return int(match.group(1))
-
+            try:
+                return int(match.group(1))
+            except ValueError:
+                pass
     return None
 
-
 def detect_product(text: str):
+    text_lower = text.lower()
 
-    text = text.lower()
-
-    products = [
-
-        (
-            "fast charger",
-            [
-                "fast charger",
-                "fast charging",
-                "quick charger",
-            ],
-        ),
-
-        (
-            "laptop charger",
-            [
-                "laptop charger",
-                "laptop adapter",
-            ],
-        ),
-
-        (
-            "phone charger",
-            [
-                "phone charger",
-                "mobile charger",
-                "charger",
-            ],
-        ),
-
-        (
-            "power bank",
-            [
-                "power bank",
-                "powerbank",
-            ],
-        ),
-
-        (
-            "usb-c cable",
-            [
-                "usb c cable",
-                "usb-c cable",
-                "type c cable",
-            ],
-        ),
-
-        (
-            "earphones",
-            [
-                "earphones",
-                "earbuds",
-                "headphones",
-            ],
-        ),
-
-        (
-            "mouse",
-            [
-                "mouse",
-                "computer mouse",
-            ],
-        ),
-
-        (
-            "keyboard",
-            [
-                "keyboard",
-            ],
-        ),
-
-        (
-            "phone",
-            [
-                "smartphone",
-                "mobile phone",
-                "phone",
-            ],
-        ),
-
-        (
-            "laptop",
-            [
-                "laptop",
-                "notebook",
-            ],
-        ),
+    # Category and keyword mappings across all catalog items
+    catalog_keywords = [
+        ("fast charger", ["fast charger", "fast charging", "quick charger", "warp charger", "vooc", "gan charger", "type c adapter", "type-c charger", "power adapter"]),
+        ("laptop charger", ["laptop charger", "laptop adapter", "65w charger", "magsafe", "dell charger", "hp charger", "lenovo charger"]),
+        ("phone charger", ["phone charger", "mobile charger", "charger"]),
+        ("power bank", ["power bank", "powerbank", "portable charger", "battery pack", "10000mah", "20000mah"]),
+        ("cable", ["cable", "usb-c cable", "type c cable", "lightning cable", "braided cable", "charging wire"]),
+        ("tws earbuds", ["tws", "earbuds", "airpods", "airdopes", "galaxy buds", "ear (a)", "enco buds", "wireless buds", "true wireless"]),
+        ("headphones", ["headphones", "headphone", "over-ear", "wh-1000xm5", "rockerz", "quietcomfort", "noise cancelling"]),
+        ("earphones", ["earphones", "wired earphones", "bassheads", "in-ear earphones"]),
+        ("bluetooth speaker", ["speaker", "bluetooth speaker", "soundbar", "stone 352", "flip 6", "echo dot", "jbl go"]),
+        ("smartwatch", ["smartwatch", "smart watch", "apple watch", "galaxy watch", "fitness band", "colorfit", "xtend"]),
+        ("smartphone", ["smartphone", "phone", "mobile", "galaxy s24", "iphone", "redmi", "oneplus", "pixel", "realme", "iqoo", "poco", "vivo", "motorola"]),
+        ("tablet", ["tablet", "ipad", "galaxy tab", "realme pad", "tab"]),
+        ("laptop accessory", ["keyboard", "mouse", "mx master", "cooling pad", "usb hub", "dock", "laptop stand"]),
+        ("mobile accessory", ["screen protector", "tempered glass", "phone case", "cover", "magsafe charger", "car mount"]),
+        ("router", ["router", "wifi", "wi-fi", "extender", "archer", "mesh"]),
+        ("smart home", ["smart bulb", "smart plug", "echo", "nest", "tapo", "smart camera", "iot"]),
+        ("camera", ["camera", "dslr", "gopro", "action camera", "vlog camera", "instax"]),
+        ("printer", ["printer", "ink tank", "laserjet", "deskjet", "all-in-one"]),
+        ("television", ["tv", "television", "smart tv", "4k tv", "bravia", "oled", "qled"]),
+        ("gaming", ["gaming", "controller", "dualsense", "xbox controller", "game drive", "gaming headset", "gaming keyboard", "gaming mouse"]),
+        ("storage", ["storage", "pendrive", "pen drive", "micro sd", "sd card", "external hdd", "ssd", "hard drive"]),
+        ("monitor", ["monitor", "display", "curved monitor", "ips monitor", "screen"]),
+        ("ups", ["ups", "inverter", "backup power"]),
     ]
 
-    for product, keywords in products:
+    for category, keywords in catalog_keywords:
+        for kw in keywords:
+            if re.search(r"\b" + re.escape(kw) + r"\b", text_lower):
+                return category
 
-        for keyword in keywords:
-
-            if keyword in text:
-                return product
+    # Common brand detection fallback
+    brands = ["apple", "samsung", "sony", "boat", "jbl", "anker", "logitech", "oneplus", "realme", "xiaomi", "mi", "dell", "hp", "lenovo", "bose", "sennheiser", "sandisk", "croma", "reliance"]
+    for brand in brands:
+        if re.search(r"\b" + re.escape(brand) + r"\b", text_lower):
+            return brand
 
     return "general product"
 
@@ -553,14 +536,20 @@ setup_database()
 # =========================================================
 
 def search_inventory(
-    product,
-    budget,
-    user_latitude=None,
-    user_longitude=None,
+    query_text: str = "",
+    product: str = "general product",
+    budget: Optional[int] = None,
+    user_latitude: Optional[float] = None,
+    user_longitude: Optional[float] = None,
 ):
-
     conn = get_connection()
     cur = conn.cursor()
+
+    # Check if an area was mentioned in the user message
+    detected_loc = detect_location_in_query(query_text)
+    if detected_loc and (user_latitude is None or user_longitude is None):
+        user_latitude = detected_loc["lat"]
+        user_longitude = detected_loc["lng"]
 
     query = """
         SELECT
@@ -579,11 +568,35 @@ def search_inventory(
         FROM inventory
         WHERE stock > 0
     """
-
     params = []
 
-    if product != "general product":
+    # Clean query into keywords
+    clean_text = query_text.lower()
+    for filler in [
+        "under", "below", "less than", "within", "budget", "near", "in", "at",
+        "for", "with", "show", "find", "get", "buy", "store", "stores",
+        "shop", "shops", "the", "a", "an", "rs", "inr"
+    ]:
+        clean_text = re.sub(r"\b" + re.escape(filler) + r"\b", " ", clean_text)
 
+    if budget is not None:
+        clean_text = clean_text.replace(str(budget), " ")
+
+    tokens = [t.strip() for t in clean_text.split() if len(t.strip()) > 1]
+
+    if tokens:
+        for token in tokens:
+            query += """
+                AND (
+                    product ILIKE %s
+                    OR category ILIKE %s
+                    OR shop ILIKE %s
+                    OR address ILIKE %s
+                )
+            """
+            pattern = f"%{token}%"
+            params.extend([pattern, pattern, pattern, pattern])
+    elif product != "general product":
         query += """
             AND (
                 category = %s
@@ -591,37 +604,21 @@ def search_inventory(
                 OR product ILIKE %s
             )
         """
-
-        params.extend(
-            [
-                product,
-                f"%{product}%",
-                f"%{product}%",
-            ]
-        )
+        params.extend([product, f"%{product}%", f"%{product}%"])
 
     if budget is not None:
-
-        query += """
-            AND price <= %s
-        """
-
+        query += " AND price <= %s"
         params.append(budget)
 
-    cur.execute(
-        query,
-        params,
-    )
+    query += " LIMIT 300"
 
+    cur.execute(query, params)
     rows = cur.fetchall()
-
     cur.close()
     conn.close()
 
     results = []
-
     for row in rows:
-
         (
             product_id,
             shop,
@@ -637,10 +634,6 @@ def search_inventory(
             shop_longitude,
         ) = row
 
-        # -------------------------------------------------
-        # Use real GPS distance when both sides have coords
-        # -------------------------------------------------
-
         gps_distance = calculate_distance(
             user_latitude,
             user_longitude,
@@ -649,10 +642,7 @@ def search_inventory(
         )
 
         if gps_distance is not None:
-            final_distance = round(
-                gps_distance,
-                2,
-            )
+            final_distance = round(gps_distance, 1)
         else:
             final_distance = stored_distance
 
@@ -667,40 +657,18 @@ def search_inventory(
                 "stock": stock,
                 "distance": final_distance,
                 "rating": rating,
-                "savings": max(
-                    online_price - price,
-                    0,
-                ),
+                "savings": max(online_price - price, 0),
                 "address": address,
                 "latitude": shop_latitude,
                 "longitude": shop_longitude,
-                "location_verified": (
-                    gps_distance is not None
-                ),
+                "location_verified": (gps_distance is not None),
             }
         )
 
-    # -----------------------------------------------------
-    # Sort by actual distance when GPS is available
-    # -----------------------------------------------------
-
     if user_latitude is not None and user_longitude is not None:
-
         results.sort(
             key=lambda item: (
-                item["distance"]
-                if item["distance"] is not None
-                else 999999
-            )
-        )
-
-    else:
-
-        results.sort(
-            key=lambda item: (
-                item["distance"]
-                if item["distance"] is not None
-                else 999999
+                item["distance"] if item["distance"] is not None else 999999
             )
         )
 
@@ -1220,10 +1188,11 @@ def ai_search(request: SearchRequest):
     sentiment = detect_sentiment(message)
 
     matched_products = search_inventory(
-        product,
-        budget,
-        request.latitude,
-        request.longitude,
+        query_text=message,
+        product=product,
+        budget=budget,
+        user_latitude=request.latitude,
+        user_longitude=request.longitude,
     )
 
     using_real_location = (

@@ -18,6 +18,22 @@ import {
 } from "lucide-react";
 import ProductCard from "./ProductCard";
 
+
+function computeDistance(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Number((R * c).toFixed(1));
+}
+
 export default function CustomerView({
   query,
   setQuery,
@@ -37,20 +53,31 @@ export default function CustomerView({
   formatStatus,
   statusStyle,
   loadInventory,
-  inventory
+  inventory,
+  onOpenLocationModal
 }) {
   // Client-side Sorting & Filtering State
   const [sortBy, setSortBy] = useState("distance"); // "distance" | "price_low" | "rating" | "savings" | "stock"
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [inStockOnly, setInStockOnly] = useState(false);
 
-  // Raw products from search or default inventory
+  // Raw products with dynamic distance calculated from selected location
   const rawProducts = useMemo(() => {
-    if (searchData?.results?.products) {
-      return searchData.results.products;
-    }
-    return inventory || [];
-  }, [searchData, inventory]);
+    const list = searchData?.results?.products || inventory || [];
+    if (!location?.latitude || !location?.longitude) return list;
+    return list.map((p) => {
+      if (p.latitude && p.longitude) {
+        const d = computeDistance(
+          location.latitude,
+          location.longitude,
+          p.latitude,
+          p.longitude
+        );
+        return { ...p, distance: d !== null ? d : p.distance };
+      }
+      return p;
+    });
+  }, [searchData, inventory, location]);
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -170,18 +197,13 @@ export default function CustomerView({
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
-                onClick={getLocation}
-                disabled={locationLoading}
-                className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1 transition ${
-                  location.enabled
-                    ? "bg-emerald-500/20 border-emerald-400/50 text-emerald-300"
-                    : "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
-                }`}
-                title="Detect current location for nearest store sorting"
+                onClick={onOpenLocationModal}
+                className="px-3.5 py-3 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-bold text-emerald-300 flex items-center justify-center gap-1.5 transition shrink-0 group"
+                title="Click to choose or enter your location"
               >
-                <MapPin className="w-4 h-4" />
-                <span className="hidden md:inline">
-                  {location.enabled ? "GPS Active" : "Near Me"}
+                <MapPin className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <span className="truncate max-w-[120px] sm:max-w-none">
+                  {location?.name || "Choose Area"}
                 </span>
               </button>
 

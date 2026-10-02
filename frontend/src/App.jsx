@@ -6,6 +6,7 @@ import ProductModal from "./components/ProductModal";
 import AuthModal from "./components/AuthModal";
 import ReservationSuccessModal from "./components/ReservationSuccessModal";
 import Toast from "./components/Toast";
+import LocationModal from "./components/LocationModal";
 import { Store, Heart, ShieldCheck } from "lucide-react";
 
 const API =
@@ -38,12 +39,31 @@ function App() {
   const [reservationLoading, setReservationLoading] = useState(false);
   const [customerReservations, setCustomerReservations] = useState([]);
 
-  const [location, setLocation] = useState({
-    latitude: null,
-    longitude: null,
-    enabled: false,
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [location, setLocation] = useState(() => {
+    try {
+      const saved = localStorage.getItem("localstock_location");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {
+      latitude: 12.9716,
+      longitude: 77.5946,
+      name: "Bengaluru Central",
+      enabled: true,
+    };
   });
   const [locationLoading, setLocationLoading] = useState(false);
+
+  const handleSelectLocation = (newLoc) => {
+    setLocation(newLoc);
+    try {
+      localStorage.setItem("localstock_location", JSON.stringify(newLoc));
+    } catch (e) {}
+    setMessage("📍 Location set to " + newLoc.name + ". Store inventory updated.");
+    if (query.trim()) {
+      searchProducts(query, newLoc.latitude, newLoc.longitude);
+    }
+  };
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [reservationSuccess, setReservationSuccess] = useState(null);
@@ -163,7 +183,7 @@ function App() {
   // AI SEARCH & INVENTORY
   // =========================================================
 
-  const searchProducts = async (customQuery = null) => {
+  const searchProducts = async (customQuery = null, customLat = null, customLng = null) => {
     const searchText = customQuery !== null ? customQuery : query;
 
     if (!searchText.trim()) {
@@ -175,14 +195,17 @@ function App() {
     setMessage("");
     setSearchData(null);
 
+    const lat = customLat !== null ? customLat : location.latitude;
+    const lng = customLng !== null ? customLng : location.longitude;
+
     try {
       const response = await fetch(`${API}/ai/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: searchText,
-          latitude: location.latitude,
-          longitude: location.longitude,
+          latitude: lat,
+          longitude: lng,
         }),
       });
 
@@ -595,6 +618,7 @@ function App() {
           getLocation={getLocation}
           locationLoading={locationLoading}
           requireShopkeeper={requireShopkeeper}
+          onOpenLocationModal={() => setShowLocationModal(true)}
         />
 
         {/* Main Body View */}
@@ -619,6 +643,7 @@ function App() {
             statusStyle={statusStyle}
             loadInventory={loadInventory}
             inventory={inventory}
+            onOpenLocationModal={() => setShowLocationModal(true)}
           />
         ) : (
           <ShopkeeperView
@@ -643,6 +668,16 @@ function App() {
       </div>
 
       {/* Global Product Detail Modal */}
+      {/* Global Location Selection Modal */}
+      <LocationModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        currentLocation={location}
+        onSelectLocation={handleSelectLocation}
+        onAutoDetect={getLocation}
+        locationLoading={locationLoading}
+      />
+
       <ProductModal
         selectedProduct={selectedProduct}
         setSelectedProduct={setSelectedProduct}
