@@ -83,7 +83,7 @@ export default function Navbar({
                 {locationLoading
                   ? "Detecting GPS..."
                   : location.enabled
-                  ? `Near GPS (${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)})`
+                  ? "Location Active"
                   : "Set Location"}
               </span>
             </button>

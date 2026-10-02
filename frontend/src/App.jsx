@@ -69,14 +69,40 @@ function App() {
   // LOCATION
   // =========================================================
 
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      setMessage("Your browser does not support geolocation.");
-      return;
+  // IP-based location fallback (works on HTTP)
+  const getLocationByIP = async () => {
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+      if (data.latitude && data.longitude) {
+        setLocation({ latitude: data.latitude, longitude: data.longitude, enabled: true });
+        setMessage("Location set via network: " + (data.city || "your area") + ". Distances are approximate.");
+      } else {
+        setLocation({ latitude: 12.9716, longitude: 77.5946, enabled: true });
+        setMessage("Using default location (Bengaluru). Distances are approximate.");
+      }
+    } catch (e) {
+      setLocation({ latitude: 12.9716, longitude: 77.5946, enabled: true });
+      setMessage("Using demo location. You can still search and see results.");
+    } finally {
+      setLocationLoading(false);
     }
+  };
 
+  const getLocation = () => {
     setLocationLoading(true);
     setMessage("");
+
+    // On plain HTTP (not localhost), browsers block GPS entirely
+    const isSecure =
+      window.location.protocol === "https:" ||
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (!isSecure || !navigator.geolocation) {
+      getLocationByIP();
+      return;
+    }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -86,15 +112,15 @@ function App() {
           enabled: true,
         });
         setLocationLoading(false);
-        setMessage("📍 GPS location detected. Store distances prioritized.");
+        setMessage("GPS location detected. Store distances prioritized.");
       },
-      () => {
-        setLocationLoading(false);
-        setMessage("Location permission was not granted. You can still search normally.");
+      (err) => {
+        // err.code 1=permission denied, 2=unavailable, 3=timeout
+        getLocationByIP();
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
+        enableHighAccuracy: false,
+        timeout: 8000,
         maximumAge: 300000,
       }
     );
